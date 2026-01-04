@@ -1,0 +1,14 @@
+.appRoot {
+    min-height: 100vh;
+}
+
+.appMain {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.appHeading {
+    font-size: 28px;
+    margin: 0;
+}

@@ -1,4 +1,8 @@
 .env
 .venv
 .venv/
-
+backend/app/__pycache__
+backend/app/database.db
+password.txt
+backend/app/create_user.py 
+backend/upload/
