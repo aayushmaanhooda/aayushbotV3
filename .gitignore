@@ -6,3 +6,5 @@ backend/app/database.db
 password.txt
 backend/app/create_user.py 
 backend/upload/
+backend/notebook/ragProfile.pdf
+backend/notebook/hubmcp.ipynb
