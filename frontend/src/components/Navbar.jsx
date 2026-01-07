@@ -3,19 +3,26 @@ import "./Navbar.css";
 import resumePdf from "../assets/resume.pdf";
 
 export default function Navbar() {
+  // Only enable server status checking in production
+  const isProduction =
+    import.meta?.env?.PROD || window.location.hostname !== "localhost";
+
   const [serverStatus, setServerStatus] = useState({
-    status: "checking", // 'checking', 'online', 'offline'
+    status: isProduction ? "checking" : "online", // Skip checking on localhost
     latency: null,
   });
 
   useEffect(() => {
-    // Function to check server health
+    // Skip server health checks on localhost for faster dev experience
+    if (!isProduction) {
+      return;
+    }
+
+    // Function to check server health (production only)
     const checkServerHealth = async () => {
       const backendUrl =
         import.meta?.env?.VITE_BACKEND_URL ||
-        (import.meta?.env?.PROD || window.location.hostname !== "localhost"
-          ? "https://aayushbotv3.onrender.com"
-          : "http://localhost:8000");
+        "https://aayushbotv3.onrender.com";
 
       try {
         const startTime = performance.now();
@@ -43,7 +50,7 @@ export default function Navbar() {
     const interval = setInterval(checkServerHealth, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isProduction]);
 
   return (
     <header className="navShell">
@@ -62,34 +69,37 @@ export default function Navbar() {
               </span>
             </a>
 
-            <div className="navStatus">
-              {serverStatus.status === "checking" && (
-                <div className="statusIndicator statusChecking">
-                  <span className="statusDot statusDotChecking"></span>
-                  <span className="statusText">Checking...</span>
-                </div>
-              )}
-              {serverStatus.status === "online" && (
-                <div className="statusIndicator statusOnline">
-                  <span className="statusDot statusDotOnline"></span>
-                  <span className="statusText">
-                    Online
-                    {serverStatus.latency && (
-                      <span className="statusLatency">
-                        {" "}
-                        · {serverStatus.latency}ms
-                      </span>
-                    )}
-                  </span>
-                </div>
-              )}
-              {serverStatus.status === "offline" && (
-                <div className="statusIndicator statusOffline">
-                  <span className="statusDot statusDotOffline"></span>
-                  <span className="statusText">Waking up...</span>
-                </div>
-              )}
-            </div>
+            {/* Only show server status in production */}
+            {isProduction && (
+              <div className="navStatus">
+                {serverStatus.status === "checking" && (
+                  <div className="statusIndicator statusChecking">
+                    <span className="statusDot statusDotChecking"></span>
+                    <span className="statusText">Checking...</span>
+                  </div>
+                )}
+                {serverStatus.status === "online" && (
+                  <div className="statusIndicator statusOnline">
+                    <span className="statusDot statusDotOnline"></span>
+                    <span className="statusText">
+                      Online
+                      {serverStatus.latency && (
+                        <span className="statusLatency">
+                          {" "}
+                          · {serverStatus.latency}ms
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+                {serverStatus.status === "offline" && (
+                  <div className="statusIndicator statusOffline">
+                    <span className="statusDot statusDotOffline"></span>
+                    <span className="statusText">Waking up...</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <nav className="navLinks" aria-label="Primary">

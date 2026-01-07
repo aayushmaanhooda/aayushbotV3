@@ -1,6 +1,6 @@
 from sqlmodel import Field, SQLModel, create_engine, Session
 from dotenv import load_dotenv
-from .models import User
+from models import User
 import os
 
 # Whenever you create a class that inherits from SQLModel
