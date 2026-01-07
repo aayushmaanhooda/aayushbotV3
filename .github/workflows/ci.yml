@@ -128,22 +128,22 @@ jobs:
       - name: 🔐 Set up environment variables
         run: |
           cd backend/app
-
-           # Sensitive values from GitHub Secrets
-           echo "EXPIRE_TIME=${{ secrets.EXPIRE_TIME }}" >> .env
-            echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
-            echo "DB_FILE_NAME=${{ secrets.DB_FILE_NAME }}" >> .env
-            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-            echo "TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}" >> .env
-            echo "GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_ACCESS_TOKEN }}" >> .env
-            echo "LANGSMITH_TRACING=${{ secrets.LANGSMITH_TRACING }}" >> .env
-            echo "LANGSMITH_ENDPOINT=${{ secrets.LANGSMITH_ENDPOINT }}" >> .env
-            echo "LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}" >> .env
-            echo "LANGSMITH_PROJECT=${{ secrets.LANGSMITH_PROJECT }}" >> .env
-            echo "GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME }}" >> .env
-            echo "PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}" >> .env
-            echo "PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}" >> .env
+          
+          # Sensitive values from GitHub Secrets
+          echo "EXPIRE_TIME=${{ secrets.EXPIRE_TIME }}" >> .env
+          echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
+          echo "DB_FILE_NAME=${{ secrets.DB_FILE_NAME }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}" >> .env
+          echo "GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_ACCESS_TOKEN }}" >> .env
+          echo "LANGSMITH_TRACING=${{ secrets.LANGSMITH_TRACING }}" >> .env
+          echo "LANGSMITH_ENDPOINT=${{ secrets.LANGSMITH_ENDPOINT }}" >> .env
+          echo "LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}" >> .env
+          echo "LANGSMITH_PROJECT=${{ secrets.LANGSMITH_PROJECT }}" >> .env
+          echo "GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME }}" >> .env
+          echo "PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}" >> .env
+          echo "PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}" >> .env
                 
             
       
@@ -155,26 +155,27 @@ jobs:
       # -----------------------------------------------------------------------
       - name: 🚀 Start backend server
         run: |
-          cd backend/app
+          cd backend
           
-          # Start server in background using nohup
+          # Start server in background using nohup and uvicorn
+          # We use uvicorn instead of 'python main.py' because we have relative imports
           # nohup = "no hang up" - keeps running even if terminal closes
           # & at end = run in background
-          nohup python main.py > server.log 2>&1 &
+          nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > app/server.log 2>&1 &
           
           # Save the process ID so we can stop it later
-          echo $! > server.pid
+          echo $! > app/server.pid
           
           # Wait for server to start (give it 5 seconds)
           echo "⏳ Waiting for server to start..."
           sleep 5
           
           # Check if server is actually running
-          if ps -p $(cat server.pid) > /dev/null; then
-            echo "✅ Server started successfully (PID: $(cat server.pid))"
+          if ps -p $(cat app/server.pid) > /dev/null; then
+            echo "✅ Server started successfully (PID: $(cat app/server.pid))"
           else
             echo "❌ Server failed to start!"
-            cat server.log
+            cat app/server.log
             exit 1
           fi
         

@@ -1,8 +1,16 @@
 const DEFAULT_BACKEND_URL = 'http://localhost:8000'
+const PRODUCTION_BACKEND_URL = 'https://aayushbotv3.onrender.com'
 
 function getBackendBaseUrl() {
+    // Priority: 1. Environment variable, 2. Production URL (if deployed), 3. Localhost
     const fromEnv = import.meta?.env?.VITE_BACKEND_URL
-    return (fromEnv && String(fromEnv).trim()) || DEFAULT_BACKEND_URL
+    if (fromEnv && String(fromEnv).trim()) {
+        return String(fromEnv).trim()
+    }
+
+    // Auto-detect if running in production (Vercel)
+    const isProduction = import.meta?.env?.PROD || window.location.hostname !== 'localhost'
+    return isProduction ? PRODUCTION_BACKEND_URL : DEFAULT_BACKEND_URL
 }
 
 export async function login({ username, password }) {
