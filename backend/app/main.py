@@ -9,7 +9,7 @@ from sqlmodel import Session, text
 import time
 from fastapi.security import OAuth2PasswordRequestForm
 from .auth import authenticate_user, create_access_token, get_current_user
-from .chat import chat_with_agent, ChatRequest
+from .chat import chat_with_agent, ChatRequest, reset_agent
 import re
 
 origins = [
@@ -177,6 +177,19 @@ async def upload_admin_pdf(
 def logout(response: Response):
     response.delete_cookie(key=os.getenv("COOKIE_NAME", "access_token"), path="/")
     return {"ok": True}
+
+
+@app.post("/admin/reset-agent")
+async def admin_reset_agent(user_id: str = Depends(get_current_user)):
+    """
+    Admin endpoint to manually reset the agent.
+    Forces agent to reinitialize with latest prompt on next chat request.
+    """
+    await reset_agent()
+    return {
+        "ok": True,
+        "message": "Agent reset successfully. Will reinitialize with latest prompt on next chat.",
+    }
 
 
 @app.post("/chat")

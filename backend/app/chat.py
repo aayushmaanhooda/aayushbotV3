@@ -49,9 +49,20 @@ async def get_agent():
     async with _agent_lock:
         if _agent is None:
             print("🤖 Initializing unified agent...")
+            print(f"📝 System prompt version: Using latest prompt from prompts.py")
             _agent = await create_unified_agent()
             print("✅ Agent ready!")
         return _agent
+
+
+async def reset_agent():
+    """Force reset the agent instance (clears cache)."""
+    global _agent
+    async with _agent_lock:
+        if _agent is not None:
+            print("🔄 Resetting agent instance...")
+            _agent = None
+            print("✅ Agent reset complete. Will reinitialize on next chat request.")
 
 
 async def chat_with_agent(request: ChatRequest) -> ChatResponse:
