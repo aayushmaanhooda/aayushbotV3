@@ -15,6 +15,7 @@ import re
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://aayushbot-v3.vercel.app",  # Production frontend on Vercel
 ]
 
 
@@ -127,7 +128,7 @@ async def upload_admin_pdf(
         if str(agents_dir) not in sys.path:
             sys.path.insert(0, str(agents_dir))
 
-        from rag import upload_documents, clear_pinecone_index #type: ignore
+        from rag import upload_documents, clear_pinecone_index  # type: ignore
 
         # Clear all existing data from Pinecone before uploading new file
         print("🗑️  Clearing existing data from Pinecone...")
