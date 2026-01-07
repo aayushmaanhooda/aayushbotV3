@@ -1,8 +1,50 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Navbar.css";
 import resumePdf from "../assets/resume.pdf";
 
 export default function Navbar() {
+  const [serverStatus, setServerStatus] = useState({
+    status: "checking", // 'checking', 'online', 'offline'
+    latency: null,
+  });
+
+  useEffect(() => {
+    // Function to check server health
+    const checkServerHealth = async () => {
+      const backendUrl =
+        import.meta?.env?.VITE_BACKEND_URL ||
+        (import.meta?.env?.PROD || window.location.hostname !== "localhost"
+          ? "https://aayushbotv3.onrender.com"
+          : "http://localhost:8000");
+
+      try {
+        const startTime = performance.now();
+        const response = await fetch(`${backendUrl}/health`, {
+          method: "GET",
+          signal: AbortSignal.timeout(10000), // 10 second timeout
+        });
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+
+        if (response.ok) {
+          setServerStatus({ status: "online", latency });
+        } else {
+          setServerStatus({ status: "offline", latency: null });
+        }
+      } catch (error) {
+        setServerStatus({ status: "offline", latency: null });
+      }
+    };
+
+    // Check immediately on mount
+    checkServerHealth();
+
+    // Check every 30 seconds
+    const interval = setInterval(checkServerHealth, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <header className="navShell">
       <div className="navContainer">
@@ -18,6 +60,35 @@ export default function Navbar() {
               </span>
             </span>
           </a>
+
+          <div className="navStatus">
+            {serverStatus.status === "checking" && (
+              <div className="statusIndicator statusChecking">
+                <span className="statusDot statusDotChecking"></span>
+                <span className="statusText">Checking service...</span>
+              </div>
+            )}
+            {serverStatus.status === "online" && (
+              <div className="statusIndicator statusOnline">
+                <span className="statusDot statusDotOnline"></span>
+                <span className="statusText">
+                  Online
+                  {serverStatus.latency && (
+                    <span className="statusLatency">
+                      {" "}
+                      · {serverStatus.latency}ms
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+            {serverStatus.status === "offline" && (
+              <div className="statusIndicator statusOffline">
+                <span className="statusDot statusDotOffline"></span>
+                <span className="statusText">Waking up...</span>
+              </div>
+            )}
+          </div>
 
           <nav className="navLinks" aria-label="Primary">
             <a

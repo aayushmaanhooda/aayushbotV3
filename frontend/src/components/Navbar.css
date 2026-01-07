@@ -24,6 +24,7 @@
     backdrop-filter: blur(12px);
     border: 1px solid rgba(59, 130, 246, 0.15);
     box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+    flex-wrap: wrap;
 }
 
 .navBrand {
@@ -33,6 +34,7 @@
     text-decoration: none;
     color: inherit;
     min-width: 0;
+    flex: 0 1 auto;
 }
 
 .navLogo {
@@ -179,5 +181,131 @@
     .navLink {
         padding: 7px;
         font-size: 12px;
+    }
+}
+
+/* Server Status Indicator */
+.navStatus {
+    display: flex;
+    align-items: center;
+    order: 1;
+    margin-right: auto;
+    margin-left: 12px;
+}
+
+.statusIndicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.statusDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.statusText {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* Checking State - Yellow blinker */
+.statusChecking {
+    background: rgba(234, 179, 8, 0.1);
+    color: #ca8a04;
+}
+
+.statusDotChecking {
+    background: #eab308;
+    animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 8px 2px rgba(234, 179, 8, 0.4);
+    }
+
+    50% {
+        opacity: 0.3;
+        box-shadow: 0 0 4px 1px rgba(234, 179, 8, 0.2);
+    }
+}
+
+/* Online State - Green dot */
+.statusOnline {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.statusDotOnline {
+    background: #22c55e;
+    box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.4);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 8px 2px rgba(34, 197, 94, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 12px 3px rgba(34, 197, 94, 0.6);
+    }
+}
+
+/* Offline State - Red/Orange dot */
+.statusOffline {
+    background: rgba(249, 115, 22, 0.1);
+    color: #ea580c;
+}
+
+.statusDotOffline {
+    background: #f97316;
+    animation: blink 1s ease-in-out infinite;
+}
+
+.statusLatency {
+    color: rgba(22, 163, 74, 0.7);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navStatus {
+        order: 2;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .statusIndicator {
+        font-size: 11px;
+        padding: 5px 10px;
+    }
+}
+
+@media (max-width: 520px) {
+    .statusText {
+        font-size: 11px;
+    }
+
+    .statusLatency {
+        font-size: 10px;
     }
 }
