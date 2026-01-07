@@ -49,45 +49,47 @@ export default function Navbar() {
     <header className="navShell">
       <div className="navContainer">
         <div className="navBar">
-          <a className="navBrand" href="/" aria-label="Home">
-            <span className="navLogo" aria-hidden="true">
-              <img className="navLogoImg" src="/profile.png" alt="" />
-            </span>
-            <span className="navBrandText">
-              <span className="navBrandName">Aayushmaan</span>
-              <span className="navBrandTag">
-                When I'm away, I'm still here.
+          <div className="navBrandWrapper">
+            <a className="navBrand" href="/" aria-label="Home">
+              <span className="navLogo" aria-hidden="true">
+                <img className="navLogoImg" src="/profile.png" alt="" />
               </span>
-            </span>
-          </a>
-
-          <div className="navStatus">
-            {serverStatus.status === "checking" && (
-              <div className="statusIndicator statusChecking">
-                <span className="statusDot statusDotChecking"></span>
-                <span className="statusText">Checking service...</span>
-              </div>
-            )}
-            {serverStatus.status === "online" && (
-              <div className="statusIndicator statusOnline">
-                <span className="statusDot statusDotOnline"></span>
-                <span className="statusText">
-                  Online
-                  {serverStatus.latency && (
-                    <span className="statusLatency">
-                      {" "}
-                      · {serverStatus.latency}ms
-                    </span>
-                  )}
+              <span className="navBrandText">
+                <span className="navBrandName">Aayushmaan</span>
+                <span className="navBrandTag">
+                  When I'm away, I'm still here.
                 </span>
-              </div>
-            )}
-            {serverStatus.status === "offline" && (
-              <div className="statusIndicator statusOffline">
-                <span className="statusDot statusDotOffline"></span>
-                <span className="statusText">Waking up...</span>
-              </div>
-            )}
+              </span>
+            </a>
+
+            <div className="navStatus">
+              {serverStatus.status === "checking" && (
+                <div className="statusIndicator statusChecking">
+                  <span className="statusDot statusDotChecking"></span>
+                  <span className="statusText">Checking...</span>
+                </div>
+              )}
+              {serverStatus.status === "online" && (
+                <div className="statusIndicator statusOnline">
+                  <span className="statusDot statusDotOnline"></span>
+                  <span className="statusText">
+                    Online
+                    {serverStatus.latency && (
+                      <span className="statusLatency">
+                        {" "}
+                        · {serverStatus.latency}ms
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+              {serverStatus.status === "offline" && (
+                <div className="statusIndicator statusOffline">
+                  <span className="statusDot statusDotOffline"></span>
+                  <span className="statusText">Waking up...</span>
+                </div>
+              )}
+            </div>
           </div>
 
           <nav className="navLinks" aria-label="Primary">

@@ -39,9 +39,22 @@ app.add_middleware(
 
 
 @app.get("/")
-def loaclhost():
+def root():
+    """
+    Root endpoint - accessible from both local and production.
+    Returns basic server information.
+    """
     return {
-        "server": "running",
+        "status": "running",
+        "service": "Aayushmaan Bot API",
+        "version": "3.0",
+        "endpoints": {
+            "health": "/health",
+            "chat": "/chat",
+            "admin": "/admin",
+            "docs": "/docs",
+        },
+        "message": "Welcome to Aayushmaan's AI Bot API! 🤖",
     }
 
 

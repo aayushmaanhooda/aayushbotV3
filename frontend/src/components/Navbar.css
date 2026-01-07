@@ -24,7 +24,14 @@
     backdrop-filter: blur(12px);
     border: 1px solid rgba(59, 130, 246, 0.15);
     box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
-    flex-wrap: wrap;
+}
+
+.navBrandWrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .navBrand {
@@ -161,15 +168,25 @@
     .navBrandTag {
         display: none;
     }
-}
 
-@media (max-width: 520px) {
     .navLinkText {
         display: none;
     }
 
     .navLink {
         padding: 8px;
+    }
+
+    .statusText {
+        font-size: 10px;
+    }
+
+    .statusLatency {
+        font-size: 9px;
+    }
+
+    .statusIndicator {
+        padding: 3px 7px;
     }
 }
 
@@ -188,26 +205,24 @@
 .navStatus {
     display: flex;
     align-items: center;
-    order: 1;
-    margin-right: auto;
-    margin-left: 12px;
+    flex-shrink: 0;
 }
 
 .statusIndicator {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
+    gap: 6px;
+    padding: 5px 10px;
     border-radius: 8px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     white-space: nowrap;
     transition: all 0.2s ease;
 }
 
 .statusDot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -286,26 +301,25 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+    .navBrandWrapper {
+        flex-wrap: wrap;
+    }
+
     .navStatus {
-        order: 2;
-        margin-left: 0;
-        margin-right: 0;
         width: 100%;
-        justify-content: center;
+        order: 2;
+        justify-content: flex-start;
+        margin-top: 8px;
     }
 
     .statusIndicator {
-        font-size: 11px;
-        padding: 5px 10px;
-    }
-}
-
-@media (max-width: 520px) {
-    .statusText {
-        font-size: 11px;
-    }
-
-    .statusLatency {
         font-size: 10px;
+        padding: 4px 8px;
+        gap: 5px;
+    }
+
+    .statusDot {
+        width: 6px;
+        height: 6px;
     }
 }
