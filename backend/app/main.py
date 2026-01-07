@@ -3,13 +3,13 @@ from contextlib import asynccontextmanager
 import os
 from datetime import datetime
 from pathlib import Path
-from db import create_db_and_tables, get_session
+from .db import create_db_and_tables, get_session
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, text
 import time
 from fastapi.security import OAuth2PasswordRequestForm
-from auth import authenticate_user, create_access_token, get_current_user
-from chat import chat_with_agent, ChatRequest
+from .auth import authenticate_user, create_access_token, get_current_user
+from .chat import chat_with_agent, ChatRequest
 import re
 
 origins = [

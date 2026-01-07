@@ -1,14 +1,16 @@
-from auth import get_password_hash
-from db import create_db_and_tables, engine
-from models import User
+from .auth import get_password_hash
+from .db import create_db_and_tables, engine
+from .models import User
 from sqlmodel import Session, select
 from dotenv import load_dotenv
 
 import os
+
 load_dotenv()
 
 username = os.getenv("LOGIN_USER_NAME")
 password = os.getenv("PASSWORD")
+
 
 def create_user(username: str, password: str):
     hashed_password = get_password_hash(password)
