@@ -109,4 +109,31 @@ export async function logout() {
     }
 }
 
+export async function sendChatMessage(messages, threadId = 'default-thread') {
+    const baseUrl = getBackendBaseUrl().replace(/\/+$/, '')
+    const res = await fetch(`${baseUrl}/chat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+            messages,
+            thread_id: threadId,
+        }),
+    })
+
+    if (!res.ok) {
+        let message = `Chat failed (${res.status})`
+        try {
+            const data = await res.json()
+            if (typeof data?.detail === 'string') message = data.detail
+        } catch {
+            // ignore
+        }
+        throw new Error(message)
+    }
+
+    return await res.json()
+}
 

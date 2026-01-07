@@ -1,0 +1,391 @@
+.chatDockShell {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    pointer-events: none;
+}
+
+/* Welcome Card - Fades out when chat starts */
+.chatWelcomeCard {
+    pointer-events: auto;
+    max-width: 450px;
+    width: 100%;
+    margin-bottom: 100px;
+    padding: 28px 32px;
+    border-radius: 24px;
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(59, 130, 246, 0.12);
+    text-align: center;
+    animation: fadeInWelcome 0.5s ease;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+@keyframes fadeInWelcome {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chatWelcomeContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.chatWelcomeLogo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(59, 130, 246, 0.3);
+    box-shadow:
+        0 0 20px 5px rgba(59, 130, 246, 0.35),
+        0 8px 25px rgba(59, 130, 246, 0.2);
+    animation: logoGlow 3s ease-in-out infinite;
+}
+
+@keyframes logoGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 20px 5px rgba(59, 130, 246, 0.35),
+            0 8px 25px rgba(59, 130, 246, 0.2);
+    }
+
+    50% {
+        box-shadow:
+            0 0 30px 6px rgba(59, 130, 246, 0.45),
+            0 8px 25px rgba(59, 130, 246, 0.25);
+    }
+}
+
+.chatWelcomeTitle {
+    font-size: 20px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.chatWelcomeSubtitle {
+    font-size: 13px;
+    color: rgba(15, 23, 42, 0.6);
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Suggestion Chips */
+.chatSuggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.chatSuggestionChip {
+    appearance: none;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    background: rgba(255, 255, 255, 0.9);
+    color: #3b82f6;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+}
+
+.chatSuggestionChip:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.chatSuggestionChip:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Chat Container */
+.chatContainer {
+    pointer-events: auto;
+    max-width: 980px;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: 24px;
+    overflow: hidden;
+    position: fixed;
+    bottom: 56px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0 16px;
+}
+
+.chatContainer.chatActive {
+    background: transparent;
+}
+
+/* Messages Display */
+.chatMessages {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.chatMessage {
+    display: flex;
+    gap: 10px;
+    animation: fadeIn 0.4s ease;
+    align-items: flex-start;
+}
+
+.chatMessageUser {
+    flex-direction: row-reverse;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Profile Avatars */
+.chatAvatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+}
+
+.chatAvatarUser {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.chatAvatarBot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    box-shadow:
+        0 0 12px 3px rgba(59, 130, 246, 0.35),
+        0 4px 10px rgba(59, 130, 246, 0.2);
+    animation: profileGlow 3s ease-in-out infinite;
+}
+
+@keyframes profileGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 12px 3px rgba(59, 130, 246, 0.35),
+            0 4px 10px rgba(59, 130, 246, 0.2);
+    }
+
+    50% {
+        box-shadow:
+            0 0 18px 4px rgba(59, 130, 246, 0.45),
+            0 4px 10px rgba(59, 130, 246, 0.25);
+    }
+}
+
+/* Message Bubble */
+.chatMessageBubble {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 75%;
+}
+
+.chatMessageName {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(15, 23, 42, 0.7);
+    padding: 0 4px;
+}
+
+.chatMessageUser .chatMessageName {
+    text-align: right;
+    color: rgba(59, 130, 246, 0.9);
+}
+
+.chatMessageText {
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    color: rgba(15, 23, 42, 0.9);
+}
+
+.chatMessageUser .chatMessageText {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* Typing Indicator */
+.chatTyping {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px !important;
+}
+
+.typingDots {
+    display: flex;
+    gap: 4px;
+}
+
+.typingDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.7);
+    animation: typingAnimation 1.4s infinite ease-in-out;
+}
+
+.typingDot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typingDot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typingDot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.7;
+    }
+
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+/* Scrollbar styling - hidden */
+.chatMessages::-webkit-scrollbar {
+    width: 0px;
+    display: none;
+}
+
+.chatDockForm {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 8px 32px rgba(15, 23, 42, 0.1);
+}
+
+.chatDockInput {
+    height: 38px;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: rgba(15, 23, 42, 0.92);
+    background: rgba(59, 130, 246, 0.04);
+    border: 1px solid rgba(59, 130, 246, 0.12);
+    outline: none;
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.chatDockInput::placeholder {
+    color: rgba(15, 23, 42, 0.45);
+}
+
+.chatDockInput:focus {
+    border-color: rgba(59, 130, 246, 0.50);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+}
+
+.chatDockInput:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.chatDockSend {
+    height: 38px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(59, 130, 246, 0.24);
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: all 120ms ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.20);
+}
+
+.chatDockSend:hover:not(:disabled) {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.30);
+}
+
+.chatDockSend:active:not(:disabled) {
+    transform: translateY(0px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.20);
+}
+
+.chatDockSend:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

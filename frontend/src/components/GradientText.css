@@ -1,0 +1,42 @@
+.gradient-text {
+    display: inline-block;
+    background: linear-gradient(90deg,
+            var(--gradient-colors, #40ffaa, #4079ff, #40ffaa, #4079ff, #40ffaa));
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: saturate(1.3);
+    animation: gradient-animation var(--animation-speed, 3s) linear infinite;
+}
+
+.gradient-text-border {
+    position: relative;
+    padding: 2px;
+}
+
+.gradient-text-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px;
+    background: linear-gradient(90deg,
+            var(--gradient-colors, #40ffaa, #4079ff, #40ffaa, #4079ff, #40ffaa));
+    background-size: 200% auto;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: gradient-animation var(--animation-speed, 3s) linear infinite;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}

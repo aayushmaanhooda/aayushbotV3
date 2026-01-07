@@ -1,0 +1,394 @@
+# ============================================================================
+# CI/CD PIPELINE CONFIGURATION
+# ============================================================================
+# This file defines a Continuous Integration (CI) pipeline that automatically
+# runs tests whenever code is pushed to the master branch.
+#
+# WHAT IS CI/CD?
+# - CI (Continuous Integration): Automatically test code changes
+# - CD (Continuous Deployment): Automatically deploy tested code
+#
+# This pipeline runs on GitHub's servers (called "runners") and helps ensure
+# your code works correctly before merging or deploying.
+# ============================================================================
+
+# NAME: This is what you'll see in GitHub Actions tab
+name: Backend CI Pipeline
+
+# ============================================================================
+# TRIGGER: When should this pipeline run?
+# ============================================================================
+on:
+  # Run on push to master branch
+  push:
+    branches:
+      - master
+  
+  # Run on pull requests targeting master
+  pull_request:
+    branches:
+      - master
+  
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+# ============================================================================
+# JOBS: The actual work to be done
+# ============================================================================
+# A pipeline can have multiple jobs. Jobs run in parallel by default.
+# Each job runs on a fresh virtual machine (runner).
+# ============================================================================
+jobs:
+  
+  # ---------------------------------------------------------------------------
+  # JOB 1: Test Backend
+  # ---------------------------------------------------------------------------
+  # This job will:
+  # 1. Set up Python environment
+  # 2. Install dependencies
+  # 3. Start the backend server
+  # 4. Test the /health endpoint
+  # 5. Test the /chat endpoint
+  # ---------------------------------------------------------------------------
+  test-backend:
+    
+    # RUNNER: What operating system to use?
+    # Options: ubuntu-latest, windows-latest, macos-latest
+    # Ubuntu is most common for backend testing (fast and cheap)
+    runs-on: ubuntu-latest
+    
+    # -------------------------------------------------------------------------
+    # STRATEGY: Test on multiple Python versions (optional)
+    # -------------------------------------------------------------------------
+    # This creates a "matrix" - the job will run once for each Python version
+    # Useful to ensure your code works across different Python versions
+    # -------------------------------------------------------------------------
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    
+    # -------------------------------------------------------------------------
+    # STEPS: Sequential tasks to execute
+    # -------------------------------------------------------------------------
+    # Steps run one after another. If any step fails, the job stops.
+    # -------------------------------------------------------------------------
+    steps:
+      
+      # -----------------------------------------------------------------------
+      # STEP 1: Checkout Code
+      # -----------------------------------------------------------------------
+      # This downloads your repository code to the runner
+      # Without this, the runner has an empty filesystem!
+      # -----------------------------------------------------------------------
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        # 'uses' means we're using a pre-built action from GitHub marketplace
+        # actions/checkout is maintained by GitHub and handles git operations
+      
+      # -----------------------------------------------------------------------
+      # STEP 2: Set up Python
+      # -----------------------------------------------------------------------
+      # Install Python on the runner
+      # The runner starts fresh, so we need to install everything
+      # -----------------------------------------------------------------------
+      - name: 🐍 Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          # 'with' provides inputs to the action
+          # ${{ }} is GitHub Actions syntax to reference variables
+          
+          # Cache pip dependencies to speed up future runs
+          # Instead of downloading packages every time, reuse cached versions
+          cache: 'pip'
+          cache-dependency-path: 'backend/requirements.txt'
+      
+      # -----------------------------------------------------------------------
+      # STEP 3: Display Python Info (for debugging)
+      # -----------------------------------------------------------------------
+      # Good practice: Show what version is actually running
+      # Helps debug issues when things go wrong
+      # -----------------------------------------------------------------------
+      - name: 📊 Display Python version
+        run: python --version
+        # 'run' executes shell commands
+        # Any command you can run in terminal works here
+      
+      # -----------------------------------------------------------------------
+      # STEP 4: Install Dependencies
+      # -----------------------------------------------------------------------
+      # Install all Python packages from requirements.txt
+      # -----------------------------------------------------------------------
+      - name: 📦 Install dependencies
+        run: |
+          # Upgrade pip to latest version (best practice)
+          python -m pip install --upgrade pip
+          
+          # Install all packages listed in requirements.txt
+          # -r means "read from file"
+          pip install -r backend/requirements.txt
+        
+        # EXPLANATION OF THE PIPE (|) CHARACTER:
+        # The | allows multi-line commands in YAML
+        # Each line runs as a separate command
+        # If any command fails (returns non-zero exit code), the step fails
+      
+      # -----------------------------------------------------------------------
+      # STEP 5: Set up Environment Variables
+      # -----------------------------------------------------------------------
+      # Your app needs certain environment variables to run
+      # These are secrets or config values
+      # -----------------------------------------------------------------------
+      - name: 🔐 Set up environment variables
+        run: |
+          cd backend/app
+
+           # Sensitive values from GitHub Secrets
+           echo "EXPIRE_TIME=${{ secrets.EXPIRE_TIME }}" >> .env
+            echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> .env
+            echo "DB_FILE_NAME=${{ secrets.DB_FILE_NAME }}" >> .env
+            echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+            echo "TAVILY_API_KEY=${{ secrets.TAVILY_API_KEY }}" >> .env
+            echo "GITHUB_ACCESS_TOKEN=${{ secrets.GITHUB_ACCESS_TOKEN }}" >> .env
+            echo "LANGSMITH_TRACING=${{ secrets.LANGSMITH_TRACING }}" >> .env
+            echo "LANGSMITH_ENDPOINT=${{ secrets.LANGSMITH_ENDPOINT }}" >> .env
+            echo "LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}" >> .env
+            echo "LANGSMITH_PROJECT=${{ secrets.LANGSMITH_PROJECT }}" >> .env
+            echo "GITHUB_USERNAME=${{ secrets.GITHUB_USERNAME }}" >> .env
+            echo "PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}" >> .env
+            echo "PINECONE_INDEX=${{ secrets.PINECONE_INDEX }}" >> .env
+                
+            
+      
+      # -----------------------------------------------------------------------
+      # STEP 6: Start Backend Server
+      # -----------------------------------------------------------------------
+      # Run the FastAPI server in the background
+      # The server must be running for our tests to work
+      # -----------------------------------------------------------------------
+      - name: 🚀 Start backend server
+        run: |
+          cd backend/app
+          
+          # Start server in background using nohup
+          # nohup = "no hang up" - keeps running even if terminal closes
+          # & at end = run in background
+          nohup python main.py > server.log 2>&1 &
+          
+          # Save the process ID so we can stop it later
+          echo $! > server.pid
+          
+          # Wait for server to start (give it 5 seconds)
+          echo "⏳ Waiting for server to start..."
+          sleep 5
+          
+          # Check if server is actually running
+          if ps -p $(cat server.pid) > /dev/null; then
+            echo "✅ Server started successfully (PID: $(cat server.pid))"
+          else
+            echo "❌ Server failed to start!"
+            cat server.log
+            exit 1
+          fi
+        
+        # EXPLANATION:
+        # - nohup: prevents process from stopping
+        # - > server.log: redirect output to log file
+        # - 2>&1: redirect errors (stderr) to same log file
+        # - &: run in background
+        # - $!: special variable containing PID of last background process
+      
+      # -----------------------------------------------------------------------
+      # STEP 7: Wait for Server to be Ready
+      # -----------------------------------------------------------------------
+      # Even after starting, server might take time to initialize
+      # This step waits until the server actually responds
+      # -----------------------------------------------------------------------
+      - name: ⏰ Wait for server to be ready
+        run: |
+          # Try up to 30 times (30 seconds) to connect
+          max_attempts=30
+          attempt=0
+          
+          while [ $attempt -lt $max_attempts ]; do
+            # Try to connect to the health endpoint
+            if curl -f http://localhost:8000/health > /dev/null 2>&1; then
+              echo "✅ Server is ready!"
+              exit 0
+            fi
+            
+            echo "⏳ Attempt $((attempt + 1))/$max_attempts - Server not ready yet..."
+            sleep 1
+            attempt=$((attempt + 1))
+          done
+          
+          # If we get here, server never became ready
+          echo "❌ Server failed to become ready after $max_attempts seconds"
+          cat backend/app/server.log
+          exit 1
+        
+        # EXPLANATION:
+        # - curl -f: fail silently on HTTP errors
+        # - > /dev/null 2>&1: suppress output (we only care about success/failure)
+        # - exit 0: success
+        # - exit 1: failure (non-zero exit codes indicate failure)
+      
+      # -----------------------------------------------------------------------
+      # STEP 8: Test /health Endpoint
+      # -----------------------------------------------------------------------
+      # Verify the health check endpoint works correctly
+      # This ensures basic server functionality
+      # -----------------------------------------------------------------------
+      - name: 🏥 Test /health endpoint
+        run: |
+          echo "Testing /health endpoint..."
+          
+          # Make request and save response
+          response=$(curl -s http://localhost:8000/health)
+          
+          # Display the response
+          echo "Response: $response"
+          
+          # Check if response contains expected fields
+          if echo "$response" | grep -q "running successfully"; then
+            echo "✅ Health check passed!"
+          else
+            echo "❌ Health check failed!"
+            echo "Expected 'running successfully' in response"
+            exit 1
+          fi
+        
+        # EXPLANATION:
+        # - curl -s: silent mode (no progress bar)
+        # - $(...): capture command output into variable
+        # - grep -q: quiet mode (just check if pattern exists)
+        # - | : pipe output from one command to another
+      
+      # -----------------------------------------------------------------------
+      # STEP 9: Test /chat Endpoint
+      # -----------------------------------------------------------------------
+      # Test the chat endpoint with a simple "hi" message
+      # This verifies the main functionality of your app
+      # -----------------------------------------------------------------------
+      - name: 💬 Test /chat endpoint with message "hi"
+        run: |
+          echo "Testing /chat endpoint with message 'hi'..."
+          
+          # Prepare JSON payload
+          # The chat endpoint expects a specific format
+          payload='{
+            "messages": [
+              {
+                "role": "user",
+                "content": "hi"
+              }
+            ],
+            "thread_id": "ci-test-thread"
+          }'
+          
+          # Make POST request with JSON data
+          response=$(curl -s -X POST http://localhost:8000/chat \
+            -H "Content-Type: application/json" \
+            -d "$payload")
+          
+          # Display the response
+          echo "Response: $response"
+          
+          # Check if we got a valid response
+          # Look for "response" field in JSON
+          if echo "$response" | grep -q "response"; then
+            echo "✅ Chat endpoint test passed!"
+          else
+            echo "❌ Chat endpoint test failed!"
+            echo "Expected 'response' field in JSON response"
+            echo "Full response: $response"
+            exit 1
+          fi
+        
+        # EXPLANATION:
+        # - curl -X POST: make POST request (default is GET)
+        # - -H: add header
+        # - -d: send data (request body)
+        # - \: line continuation in bash (for readability)
+        
+        # NOTE: This test might fail if:
+        # - OpenAI/Pinecone keys are not set
+        # - Agent initialization fails
+        # You may want to add those keys as GitHub Secrets
+        continue-on-error: true
+        # continue-on-error: true means this step can fail without stopping the workflow
+        # Remove this line once you've added proper API keys
+      
+      # -----------------------------------------------------------------------
+      # STEP 10: Show Server Logs (for debugging)
+      # -----------------------------------------------------------------------
+      # If anything goes wrong, logs help debug
+      # This step always runs, even if previous steps failed
+      # -----------------------------------------------------------------------
+      - name: 📋 Show server logs
+        if: always()
+        # 'if: always()' means run even if previous steps failed
+        # Other options: if: failure(), if: success()
+        run: |
+          echo "=== Server Logs ==="
+          if [ -f backend/app/server.log ]; then
+            cat backend/app/server.log
+          else
+            echo "No server logs found"
+          fi
+      
+      # -----------------------------------------------------------------------
+      # STEP 11: Stop Server (cleanup)
+      # -----------------------------------------------------------------------
+      # Good practice: clean up background processes
+      # Prevents issues in future test runs
+      # -----------------------------------------------------------------------
+      - name: 🛑 Stop backend server
+        if: always()
+        run: |
+          if [ -f backend/app/server.pid ]; then
+            pid=$(cat backend/app/server.pid)
+            if ps -p $pid > /dev/null; then
+              echo "Stopping server (PID: $pid)..."
+              kill $pid
+              echo "✅ Server stopped"
+            fi
+          fi
+
+# ============================================================================
+# VIEWING RESULTS
+# ============================================================================
+# After pushing to master:
+# 1. Go to your GitHub repository
+# 2. Click "Actions" tab at the top
+# 3. Click on your workflow run
+# 4. Click on the "test-backend" job
+# 5. Expand each step to see detailed logs
+#
+# Green checkmark ✅ = step passed
+# Red X ❌ = step failed
+# ============================================================================
+
+# ============================================================================
+# NEXT STEPS
+# ============================================================================
+# 1. Add GitHub Secrets for API keys:
+#    - Go to Settings → Secrets and variables → Actions
+#    - Add: OPENAI_API_KEY, PINECONE_API_KEY, etc.
+#
+# 2. Add more tests:
+#    - Test authentication endpoints
+#    - Test file upload
+#    - Test error cases
+#
+# 3. Add code quality checks:
+#    - Linting (ruff, flake8)
+#    - Type checking (mypy)
+#    - Security scanning (bandit)
+#
+# 4. Add deployment:
+#    - Deploy to staging after tests pass
+#    - Deploy to production on tagged releases
+# ============================================================================
+

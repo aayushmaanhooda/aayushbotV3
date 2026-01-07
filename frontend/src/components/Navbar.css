@@ -1,37 +1,183 @@
 .navShell {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     width: 100%;
-    padding: 18px 0;
+    padding: 16px 0;
+    background: transparent;
 }
 
 .navContainer {
     max-width: 980px;
     margin: 0 auto;
     padding: 0 20px;
+}
+
+.navBar {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.70);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(59, 130, 246, 0.15);
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
 }
 
-.navTitle {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
+.navBrand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+}
+
+.navLogo {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 2px solid rgba(59, 130, 246, 0.3);
+    background: #ffffff;
+    box-shadow:
+        0 0 12px 3px rgba(59, 130, 246, 0.35),
+        0 10px 24px rgba(59, 130, 246, 0.15);
+    flex: 0 0 auto;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    animation: navLogoGlow 3s ease-in-out infinite;
+}
+
+@keyframes navLogoGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 12px 3px rgba(59, 130, 246, 0.35),
+            0 10px 24px rgba(59, 130, 246, 0.15);
+    }
+
+    50% {
+        box-shadow:
+            0 0 18px 4px rgba(59, 130, 246, 0.45),
+            0 10px 24px rgba(59, 130, 246, 0.2);
+    }
+}
+
+.navLogoImg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.navBrandText {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.navBrandName {
+    font-size: 15px;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb, #3b82f6, #60a5fa);
+    background-size: 300% auto;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: saturate(1.3);
+    animation: nav-gradient 4s linear infinite;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@keyframes nav-gradient {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+.navBrandTag {
+    font-size: 11.5px;
+    color: rgba(15, 23, 42, 0.58);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .navLinks {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 6px;
+    flex: 0 0 auto;
 }
 
 .navLink {
-    color: inherit;
+    color: #3b82f6;
     text-decoration: none;
-    font-weight: 500;
-    opacity: 0.9;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: transparent;
+    transition: all 120ms ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navIcon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.navLinkText {
+    white-space: nowrap;
 }
 
 .navLink:hover {
-    opacity: 1;
-    text-decoration: underline;
+    color: #3b82f6;
+    background: rgba(59, 130, 246, 0.06);
+}
+
+.navLink:active {
+    background: rgba(59, 130, 246, 0.10);
+}
+
+@media (max-width: 520px) {
+    .navBrandTag {
+        display: none;
+    }
+}
+
+@media (max-width: 520px) {
+    .navLinkText {
+        display: none;
+    }
+
+    .navLink {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 420px) {
+    .navLinks {
+        gap: 4px;
+    }
+
+    .navLink {
+        padding: 7px;
+        font-size: 12px;
+    }
 }

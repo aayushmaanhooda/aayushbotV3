@@ -157,23 +157,26 @@ body {
 .adminButton {
     height: 34px;
     border-radius: 10px;
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    background: #0f172a;
+    border: none;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     color: white;
     font-weight: 650;
     font-size: 12.5px;
     letter-spacing: 0.02em;
     cursor: pointer;
-    transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease;
+    transition: transform 120ms ease, filter 120ms ease, opacity 120ms ease, box-shadow 120ms ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .adminButton:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.1);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .adminButton:active {
     transform: translateY(0px);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
 }
 
 .adminButton:disabled {

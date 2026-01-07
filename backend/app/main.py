@@ -9,6 +9,7 @@ from sqlmodel import Session, text
 import time
 from fastapi.security import OAuth2PasswordRequestForm
 from auth import authenticate_user, create_access_token, get_current_user
+from chat import chat_with_agent, ChatRequest
 import re
 
 origins = [
@@ -117,12 +118,44 @@ async def upload_admin_pdf(
 
     target.write_bytes(contents)
 
+    # Trigger RAG pipeline to process the uploaded file
+    try:
+        # Import the RAG upload function
+        import sys
+
+        agents_dir = backend_dir / "agents"
+        if str(agents_dir) not in sys.path:
+            sys.path.insert(0, str(agents_dir))
+
+        from rag import upload_documents, clear_pinecone_index #type: ignore
+
+        # Clear all existing data from Pinecone before uploading new file
+        print("🗑️  Clearing existing data from Pinecone...")
+        clear_pinecone_index()
+
+        # Process the uploaded PDF with RAG pipeline
+        print(f"📤 Uploading new document: {safe_name}")
+        document_ids = upload_documents(str(target))
+        rag_status = {
+            "processed": True,
+            "chunks_uploaded": len(document_ids),
+            "cleared_old_data": True,
+        }
+    except Exception as e:
+        # Log error but don't fail the upload
+        print(f"❌ RAG pipeline error: {str(e)}")
+        rag_status = {
+            "processed": False,
+            "error": str(e),
+        }
+
     return {
         "ok": True,
         "uploaded_by": user_id,
         "filename": safe_name,
         "stored_as": target.name,
         "size_bytes": len(contents),
+        "rag_pipeline": rag_status,
     }
 
 
@@ -130,6 +163,15 @@ async def upload_admin_pdf(
 def logout(response: Response):
     response.delete_cookie(key=os.getenv("COOKIE_NAME", "access_token"), path="/")
     return {"ok": True}
+
+
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    """
+    Chat endpoint using the unified agent.
+    Supports conversation threads and maintains context.
+    """
+    return await chat_with_agent(request)
 
 
 if __name__ == "__main__":

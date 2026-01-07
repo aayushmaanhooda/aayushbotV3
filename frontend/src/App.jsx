@@ -1,6 +1,10 @@
 import React from "react";
 import Admin from "./pages/Admin.jsx";
 import Navbar from "./components/Navbar.jsx";
+import ChatDock from "./components/ChatDock.jsx";
+import Footer from "./components/Footer.jsx";
+import ShinyText from "./components/ShinyText.jsx";
+import GradientText from "./components/GradientText.jsx";
 import "./App.css";
 
 function usePathname() {
@@ -27,9 +31,9 @@ const App = () => {
   return (
     <div className="appRoot">
       <Navbar />
-      <main className="appMain">
-        <h1 className="appHeading">Welcome to Chat Bot</h1>
-      </main>
+      <main className="appMain"></main>
+      <ChatDock />
+      <Footer />
     </div>
   );
 };
