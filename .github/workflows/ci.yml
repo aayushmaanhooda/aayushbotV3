@@ -1,17 +1,3 @@
-# ============================================================================
-# CI/CD PIPELINE CONFIGURATION
-# ============================================================================
-# This file defines a Continuous Integration (CI) pipeline that automatically
-# runs tests whenever code is pushed to the master branch.
-#
-# WHAT IS CI/CD?
-# - CI (Continuous Integration): Automatically test code changes
-# - CD (Continuous Deployment): Automatically deploy tested code
-#
-# This pipeline runs on GitHub's servers (called "runners") and helps ensure
-# your code works correctly before merging or deploying.
-# ============================================================================
-
 # NAME: This is what you'll see in GitHub Actions tab
 name: Backend CI Pipeline
 
@@ -240,7 +226,7 @@ jobs:
       # Verify the health check endpoint works correctly
       # This ensures basic server functionality
       # -----------------------------------------------------------------------
-      - name: 🏥 Test /health endpoint
+      - name: 🏥 Test /health endpoint in Development
         run: |
           echo "Testing /health endpoint..."
           
@@ -258,6 +244,9 @@ jobs:
             echo "Expected 'running successfully' in response"
             exit 1
           fi
+        
+
+        
         
         # EXPLANATION:
         # - curl -s: silent mode (no progress bar)
@@ -305,20 +294,10 @@ jobs:
             echo "Full response: $response"
             exit 1
           fi
-        
-        # EXPLANATION:
-        # - curl -X POST: make POST request (default is GET)
-        # - -H: add header
-        # - -d: send data (request body)
-        # - \: line continuation in bash (for readability)
-        
-        # NOTE: This test might fail if:
-        # - OpenAI/Pinecone keys are not set
-        # - Agent initialization fails
-        # You may want to add those keys as GitHub Secrets
         continue-on-error: true
-        # continue-on-error: true means this step can fail without stopping the workflow
-        # Remove this line once you've added proper API keys
+    
+
+       
       
       # -----------------------------------------------------------------------
       # STEP 10: Show Server Logs (for debugging)
